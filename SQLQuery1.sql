@@ -1,0 +1,20 @@
+﻿CREATE TABLE Kullanicilar (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    KullaniciAdi NVARCHAR(50) NOT NULL UNIQUE,
+    SifreHash NVARCHAR(200) NOT NULL,
+    AdSoyad NVARCHAR(100) NOT NULL,
+    Rol NVARCHAR(20) NOT NULL DEFAULT 'Calisan',
+    KayitTarihi DATETIME NOT NULL DEFAULT GETDATE()
+);
+
+CREATE TABLE CalismaKayitlari (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    KullaniciId INT NOT NULL FOREIGN KEY REFERENCES Kullanicilar(Id),
+    Konu NVARCHAR(200) NOT NULL,
+    Icerik NVARCHAR(MAX),
+    BaslangicZamani DATETIME NOT NULL,
+    BitisZamani DATETIME NOT NULL,
+    SureDakika INT NOT NULL,
+    SaatlikUcret DECIMAL(10,2) NOT NULL,
+    ToplamUcret DECIMAL(10,2) NOT NULL
+);
