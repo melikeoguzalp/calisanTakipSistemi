@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ManuelSureForm));
             label1 = new Label();
             dtpBaslangic = new DateTimePicker();
             label2 = new Label();
@@ -183,6 +184,7 @@
             Controls.Add(label2);
             Controls.Add(dtpBaslangic);
             Controls.Add(label1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "ManuelSureForm";
             Text = "ManuelSureForm";
             ResumeLayout(false);

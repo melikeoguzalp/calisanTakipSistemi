@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(KayitOlForm));
             btnKayitOl = new Button();
             label4 = new Label();
             label3 = new Label();
@@ -42,6 +43,8 @@
             btnKayitlariListele = new Button();
             chkSifreGoster = new CheckBox();
             btnBilgileriKopyala = new Button();
+            label6 = new Label();
+            txtEmail = new TextBox();
             SuspendLayout();
             // 
             // btnKayitOl
@@ -57,7 +60,7 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(18, 179);
+            label4.Location = new Point(18, 213);
             label4.Name = "label4";
             label4.Size = new Size(86, 20);
             label4.TabIndex = 3;
@@ -66,7 +69,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(18, 130);
+            label3.Location = new Point(18, 164);
             label3.Name = "label3";
             label3.Size = new Size(42, 20);
             label3.TabIndex = 2;
@@ -107,7 +110,7 @@
             // 
             // txtSifre
             // 
-            txtSifre.Location = new Point(122, 123);
+            txtSifre.Location = new Point(122, 164);
             txtSifre.Name = "txtSifre";
             txtSifre.PasswordChar = '*';
             txtSifre.Size = new Size(125, 27);
@@ -115,7 +118,7 @@
             // 
             // txtSifreTekrar
             // 
-            txtSifreTekrar.Location = new Point(122, 176);
+            txtSifreTekrar.Location = new Point(122, 210);
             txtSifreTekrar.Name = "txtSifreTekrar";
             txtSifreTekrar.PasswordChar = '*';
             txtSifreTekrar.Size = new Size(125, 27);
@@ -123,7 +126,7 @@
             // 
             // txtSaatlikUcret
             // 
-            txtSaatlikUcret.Location = new Point(122, 252);
+            txtSaatlikUcret.Location = new Point(122, 286);
             txtSaatlikUcret.Name = "txtSaatlikUcret";
             txtSaatlikUcret.Size = new Size(125, 27);
             txtSaatlikUcret.TabIndex = 10;
@@ -132,7 +135,7 @@
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(18, 259);
+            label5.Location = new Point(18, 293);
             label5.Name = "label5";
             label5.Size = new Size(95, 20);
             label5.TabIndex = 9;
@@ -152,7 +155,7 @@
             // 
             chkSifreGoster.AutoSize = true;
             chkSifreGoster.Font = new Font("Segoe UI", 6F);
-            chkSifreGoster.Location = new Point(165, 219);
+            chkSifreGoster.Location = new Point(165, 253);
             chkSifreGoster.Name = "chkSifreGoster";
             chkSifreGoster.Size = new Size(82, 17);
             chkSifreGoster.TabIndex = 12;
@@ -170,11 +173,29 @@
             btnBilgileriKopyala.UseVisualStyleBackColor = true;
             btnBilgileriKopyala.Click += btnBilgileriKopyala_Click;
             // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Location = new Point(18, 126);
+            label6.Name = "label6";
+            label6.Size = new Size(63, 20);
+            label6.TabIndex = 16;
+            label6.Text = "E-posta:";
+            // 
+            // txtEmail
+            // 
+            txtEmail.Location = new Point(122, 123);
+            txtEmail.Name = "txtEmail";
+            txtEmail.Size = new Size(125, 27);
+            txtEmail.TabIndex = 17;
+            // 
             // KayitOlForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(txtEmail);
+            Controls.Add(label6);
             Controls.Add(btnBilgileriKopyala);
             Controls.Add(chkSifreGoster);
             Controls.Add(btnKayitlariListele);
@@ -189,6 +210,7 @@
             Controls.Add(label3);
             Controls.Add(label2);
             Controls.Add(label1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "KayitOlForm";
             Text = "Çalışan Kayıt Et";
             ResumeLayout(false);
@@ -211,5 +233,7 @@
         private Button btnKayitlariListele;
         private CheckBox chkSifreGoster;
         private Button btnBilgileriKopyala;
+        private Label label6;
+        private TextBox txtEmail;
     }
 }

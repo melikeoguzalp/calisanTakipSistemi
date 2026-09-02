@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GirisForm));
             label1 = new Label();
             txtGirisKullaniciAdi = new TextBox();
@@ -35,6 +36,7 @@
             txtGirisSifre = new TextBox();
             btnGirisYap = new Button();
             pbLogo = new PictureBox();
+            notifyIconAna = new NotifyIcon(components);
             ((System.ComponentModel.ISupportInitialize)pbLogo).BeginInit();
             SuspendLayout();
             // 
@@ -91,6 +93,13 @@
             pbLogo.TabIndex = 5;
             pbLogo.TabStop = false;
             // 
+            // notifyIconAna
+            // 
+            notifyIconAna.Icon = (Icon)resources.GetObject("notifyIconAna.Icon");
+            notifyIconAna.Text = "Çalışma Takip Sistemi";
+            notifyIconAna.Visible = true;
+            notifyIconAna.MouseClick += notifyIconAna_MouseClick;
+            // 
             // GirisForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -102,6 +111,7 @@
             Controls.Add(label2);
             Controls.Add(txtGirisKullaniciAdi);
             Controls.Add(label1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "GirisForm";
             Text = "GirisForm";
             ((System.ComponentModel.ISupportInitialize)pbLogo).EndInit();
@@ -117,5 +127,6 @@
         private TextBox txtGirisSifre;
         private Button btnGirisYap;
         private PictureBox pbLogo;
+        private NotifyIcon notifyIconAna;
     }
 }

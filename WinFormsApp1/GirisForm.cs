@@ -11,6 +11,10 @@ namespace WinFormsApp1
 {
     public partial class GirisForm : Form
     {
+        private AnaForm anaFormReferansi = null;
+        private int sonGirisYapanId = 0;
+        private string sonGirisYapanAdSoyad = null;
+
         public GirisForm()
         {
             InitializeComponent();
@@ -19,13 +23,10 @@ namespace WinFormsApp1
 
         private void TasarimiUygula()
         {
-
             this.Size = new Size(420, 480);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.MaximizeBox = false;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
-
-
 
             this.BackColor = ColorTranslator.FromHtml("#F4F6F8");
             this.Font = new Font("Segoe UI", 9.5f);
@@ -78,21 +79,25 @@ namespace WinFormsApp1
                                 string adSoyad = okuyucu["AdSoyad"].ToString();
                                 string rol = okuyucu["Rol"].ToString();
 
-                                if (SifreYardimcisi.Dogrula(txtGirisSifre.Text, kayitliHash))
+                                if (SifreYardimcisi.Dogrula(txtGirisSifre.Text, kayitliHash, txtGirisKullaniciAdi.Text))
                                 {
                                     int girisYapanId = (int)okuyucu["Id"];
 
                                     if (rol == "Yonetici")
                                     {
-                                        // İK ise: Çalışan Kaydet ekranına gönder
                                         KayitOlForm kayitOlForm = new KayitOlForm();
                                         kayitOlForm.Show();
                                         this.Hide();
                                     }
                                     else
                                     {
-                                        // Çalışan ise: Süre takip ekranına gönder
+                                        sonGirisYapanId = girisYapanId;
+                                        sonGirisYapanAdSoyad = adSoyad;
+
                                         AnaForm anaForm = new AnaForm(girisYapanId, adSoyad);
+                                        anaFormReferansi = anaForm;
+                                        anaForm.FormClosed += (s, args) => { anaFormReferansi = null; };
+
                                         anaForm.Show();
                                         this.Hide();
                                     }
@@ -113,6 +118,47 @@ namespace WinFormsApp1
             catch (Exception hata)
             {
                 MessageBox.Show("Bir hata oluştu: " + hata.Message);
+            }
+        }
+
+        private void notifyIconAna_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                ContextMenuStrip menu = new ContextMenuStrip();
+
+                bool acikMi = anaFormReferansi != null && !anaFormReferansi.IsDisposed;
+                bool aktifMi = acikMi && anaFormReferansi.CalisiyorMu;
+                string durumYazisi = aktifMi ? "Aktif" : "Pasif";
+
+                ToolStripMenuItem durumOgesi = new ToolStripMenuItem("Durum: " + durumYazisi);
+                durumOgesi.Click += (s, args) => AnaFormuGosterYaDaAc();
+
+                menu.Items.Add(durumOgesi);
+                menu.Show(Cursor.Position);
+            }
+        }
+
+        private void AnaFormuGosterYaDaAc()
+        {
+            if (anaFormReferansi != null && !anaFormReferansi.IsDisposed)
+            {
+                // Zaten açık, sadece öne getir
+                anaFormReferansi.OneGetir();
+            }
+            else
+            {
+                // Kapanmış, yeniden aç
+                if (sonGirisYapanId == 0)
+                {
+                    MessageBox.Show("Henüz bir çalışan girişi yapılmadı.");
+                    return;
+                }
+
+                AnaForm yeniForm = new AnaForm(sonGirisYapanId, sonGirisYapanAdSoyad);
+                anaFormReferansi = yeniForm;
+                yeniForm.FormClosed += (s, args) => { anaFormReferansi = null; };
+                yeniForm.Show();
             }
         }
     }

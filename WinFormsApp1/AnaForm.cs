@@ -2,6 +2,9 @@ using System;
 using Microsoft.Data.SqlClient;
 using System.Windows.Forms;
 using System.Drawing;
+using System.IO;
+using System.Diagnostics;
+using System.Text;
 
 namespace WinFormsApp1
 {
@@ -18,6 +21,12 @@ namespace WinFormsApp1
 
         private int? acikKayitId = null;
 
+        // ---- HAREKETSİZLİK TESPİTİ ----
+        private Point sonFarePozisyonu = Point.Empty;
+        private int hareketsizSaniyeSayaci = 0;
+        private int hareketsizlikLimitiSaniye = 120; // varsayılan, veritabanından okunamazsa kullanılır
+        private int secilenRaporYili = DateTime.Now.Year;
+
         public AnaForm(int girisYapanId, string girisYapanAdSoyad)
         {
             InitializeComponent();
@@ -31,14 +40,21 @@ namespace WinFormsApp1
             btnBaslatDurdur.BackColor = Color.MediumSeaGreen;
             btnBaslatDurdur.ForeColor = Color.White;
 
+            this.KeyPreview = true;
             TasarimiUygula();
             ToplamCalismaSuresiniGoster();
             YarimKalanKaydiKontrolEt();
+            RaporSecenekleriniDoldur();
+            HareketsizlikAyariniYukle();
+
+
+            sonFarePozisyonu = Cursor.Position;
+            idleTimer.Interval = 1000;
+            idleTimer.Start();
         }
 
         private void TasarimiUygula()
         {
-            this.Size = new Size(450, 650);
 
             this.StartPosition = FormStartPosition.Manual;
 
@@ -52,6 +68,7 @@ namespace WinFormsApp1
 
             this.BackColor = ColorTranslator.FromHtml("#F4F6F8");
             this.Font = new Font("Segoe UI", 9.5f);
+
 
             foreach (Control kontrol in this.Controls)
             {
@@ -77,7 +94,123 @@ namespace WinFormsApp1
             lblHosgeldin.ForeColor = ColorTranslator.FromHtml("#1E293B");
 
             lblToplamSure.Font = new Font("Segoe UI", 10f, FontStyle.Bold);
-            lblToplamSure.ForeColor = ColorTranslator.FromHtml("#0F6E56");
+
+        }
+
+        // ---- HAREKETSİZLİK TESPİTİ: Her saniye fare konumunu kontrol eder ----
+        private void idleTimer_Tick(object sender, EventArgs e)
+        {
+            Point suankiPozisyon = Cursor.Position;
+
+            if (suankiPozisyon == sonFarePozisyonu)
+            {
+                hareketsizSaniyeSayaci++;
+            }
+            else
+            {
+                hareketsizSaniyeSayaci = 0;
+                sonFarePozisyonu = suankiPozisyon;
+            }
+
+            if (hareketsizSaniyeSayaci >= hareketsizlikLimitiSaniye && calisiyorMu)
+            {
+                idleTimer.Stop();
+
+                DialogResult sonuc = HalaOradaMisinizSor();
+
+                if (sonuc == DialogResult.OK)
+                {
+                    hareketsizSaniyeSayaci = 0;
+                    sonFarePozisyonu = Cursor.Position;
+                }
+                else
+                {
+                    DurdurVeKaydet();
+                    MessageBox.Show("Hareketsizlik algılandı. Oturumunuz otomatik olarak kapatıldı.");
+                }
+
+                idleTimer.Start();
+            }
+        }
+
+        private void AnaForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            hareketsizSaniyeSayaci = 0;
+        }
+
+        // Popup'ı tamamen kod ile oluşturur, hiçbir Designer dosyasına ihtiyaç yok
+        private DialogResult HalaOradaMisinizSor()
+        {
+            Form popup = new Form();
+            popup.Size = new Size(360, 180);
+            popup.StartPosition = FormStartPosition.CenterScreen;
+            popup.FormBorderStyle = FormBorderStyle.FixedDialog;
+            popup.MaximizeBox = false;
+            popup.MinimizeBox = false;
+            popup.ControlBox = false;
+            popup.TopMost = true;
+            popup.BackColor = ColorTranslator.FromHtml("#F4F6F8");
+            popup.Font = new Font("Segoe UI", 9.5f);
+
+            Label baslik = new Label();
+            baslik.Text = "Hâlâ orada mısınız?";
+            baslik.Font = new Font("Segoe UI", 12f, FontStyle.Bold);
+            baslik.ForeColor = ColorTranslator.FromHtml("#1E293B");
+            baslik.AutoSize = true;
+            baslik.Location = new Point(30, 25);
+
+            Label geriSayimLabel = new Label();
+            geriSayimLabel.AutoSize = true;
+            geriSayimLabel.ForeColor = ColorTranslator.FromHtml("#334155");
+            geriSayimLabel.Location = new Point(30, 60);
+
+            Button evetButon = new Button();
+            evetButon.Text = "Evet, buradayım";
+            evetButon.Size = new Size(150, 36);
+            evetButon.Location = new Point(30, 100);
+            evetButon.FlatStyle = FlatStyle.Flat;
+            evetButon.FlatAppearance.BorderSize = 0;
+            evetButon.BackColor = ColorTranslator.FromHtml("#0EA5A4");
+            evetButon.ForeColor = Color.White;
+            evetButon.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
+
+            popup.Controls.Add(baslik);
+            popup.Controls.Add(geriSayimLabel);
+            popup.Controls.Add(evetButon);
+
+            int kalanSaniye = 20;
+            geriSayimLabel.Text = "Oturumunuz " + kalanSaniye + " saniye içinde sonlanacak.";
+
+            System.Windows.Forms.Timer geriSayimTimer = new System.Windows.Forms.Timer();
+            geriSayimTimer.Interval = 1000;
+
+            geriSayimTimer.Tick += (s, e) =>
+            {
+                kalanSaniye--;
+                geriSayimLabel.Text = "Oturumunuz " + kalanSaniye + " saniye içinde sonlanacak.";
+
+                if (kalanSaniye <= 0)
+                {
+                    geriSayimTimer.Stop();
+                    popup.DialogResult = DialogResult.Cancel;
+                    popup.Close();
+                }
+            };
+
+            evetButon.Click += (s, e) =>
+            {
+                geriSayimTimer.Stop();
+                popup.DialogResult = DialogResult.OK;
+                popup.Close();
+            };
+
+            geriSayimTimer.Start();
+
+            DialogResult sonuc = popup.ShowDialog();
+            geriSayimTimer.Dispose();
+            popup.Dispose();
+
+            return sonuc;
         }
 
         // Kullanıcının TÜM konularda, TÜM zamanlardaki toplam çalışma süresi
@@ -108,6 +241,69 @@ namespace WinFormsApp1
             {
                 MessageBox.Show("Toplam süre alınırken hata oluştu: " + hata.Message);
             }
+        }
+
+        private void HareketsizlikAyariniYukle()
+        {
+            try
+            {
+                using (SqlConnection baglanti = VeritabaniYardimcisi.BaglantiAl())
+                {
+                    baglanti.Open();
+                    string sorgu = "SELECT HareketsizlikLimitiDakika FROM HareketsizlikAyarlari WHERE KullaniciId = @KullaniciId";
+                    using (SqlCommand komut = new SqlCommand(sorgu, baglanti))
+                    {
+                        komut.Parameters.AddWithValue("@KullaniciId", kullaniciId);
+                        object sonuc = komut.ExecuteScalar();
+
+                        int dakika = (sonuc == null || sonuc == DBNull.Value) ? 2 : Convert.ToInt32(sonuc);
+                        hareketsizlikLimitiSaniye = dakika * 60;
+                    }
+                }
+            }
+            catch (Exception hata)
+            {
+                MessageBox.Show("Hareketsizlik ayarı alınırken hata oluştu: " + hata.Message);
+            }
+        }
+
+        private void RaporSecenekleriniDoldur()
+        {
+            cmbRaporYil.Items.Clear();
+            int guncelYil = DateTime.Now.Year;
+            for (int yil = guncelYil; yil >= guncelYil - 1; yil--)
+            {
+                cmbRaporYil.Items.Add(yil);
+            }
+            cmbRaporYil.SelectedItem = guncelYil;
+
+            RaporAylariniGuncelle();
+        }
+
+        // Seçili yıla göre Ay listesini yeniden doldurur.
+        // Güncel yılsa, sadece bulunduğumuz aya kadar olan aylar gösterilir.
+        private void RaporAylariniGuncelle()
+        {
+            if (cmbRaporYil.SelectedItem == null) return;
+
+            int secilenYil = (int)cmbRaporYil.SelectedItem;
+            string[] aylar = { "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
+                        "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık" };
+
+            int gosterilecekAySayisi = (secilenYil == DateTime.Now.Year) ? DateTime.Now.Month : 12;
+
+            cmbRaporAy.Items.Clear();
+            for (int i = 0; i < gosterilecekAySayisi; i++)
+            {
+                cmbRaporAy.Items.Add(aylar[i]);
+            }
+
+            cmbRaporAy.SelectedIndex = cmbRaporAy.Items.Count - 1;
+        }
+
+        private void cmbRaporYil_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            RaporAylariniGuncelle();
         }
 
         // Manuel girişte kümülatif hesap için: bu konudaki mevcut toplamı verir
@@ -344,27 +540,36 @@ namespace WinFormsApp1
                 calisiyorMu = true;
                 btnBaslatDurdur.Text = "Durdur";
                 btnBaslatDurdur.BackColor = Color.IndianRed;
+
+                // Kullanıcı manuel Başlat'a bastı, hareketsizlik sayacını sıfırla
+                hareketsizSaniyeSayaci = 0;
+                sonFarePozisyonu = Cursor.Position;
             }
             else
             {
-                sureTimer.Stop();
-                calisiyorMu = false;
-                btnBaslatDurdur.Text = "Başlat";
-                btnBaslatDurdur.BackColor = Color.MediumSeaGreen;
-
-                TimeSpan buSegment = DateTime.Now - segmentBaslangicZamani;
-                toplamAktifSaniye += (int)buSegment.TotalSeconds;
-
-                lblGecenSure.Text = (toplamAktifSaniye / 60) + " dakika";
-
-                AcikKayitKapat();
-
-                KaydiVeritabaninaKaydet(DateTime.Now, toplamAktifSaniye / 60, txtKonu.Text, txtIcerik.Text, false);
-
-                ToplamCalismaSuresiniGoster();
-
+                DurdurVeKaydet();
                 MessageBox.Show("Kayıt kaydedildi.");
             }
+        }
+
+        // Hem manuel Durdur'da hem hareketsizlik tespitinde kullanılan ortak mantık
+        private void DurdurVeKaydet()
+        {
+            sureTimer.Stop();
+            calisiyorMu = false;
+            btnBaslatDurdur.Text = "Başlat";
+            btnBaslatDurdur.BackColor = Color.MediumSeaGreen;
+
+            TimeSpan buSegment = DateTime.Now - segmentBaslangicZamani;
+            toplamAktifSaniye += (int)buSegment.TotalSeconds;
+
+            lblGecenSure.Text = (toplamAktifSaniye / 60) + " dakika";
+
+            AcikKayitKapat();
+
+            KaydiVeritabaninaKaydet(DateTime.Now, toplamAktifSaniye / 60, txtKonu.Text, txtIcerik.Text, false);
+
+            ToplamCalismaSuresiniGoster();
         }
 
         private void sureTimer_Tick(object sender, EventArgs e)
@@ -435,5 +640,68 @@ namespace WinFormsApp1
                 }
             }
         }
+
+
+
+        private void AnaForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                e.Cancel = true;
+                this.Hide();
+
+                if (calisiyorMu)
+                {
+                    MessageBox.Show("Pencereyi kapattınız ama süreniz devam ediyor. Bildirim alanındaki simgeden tekrar açabilirsiniz.","uyarı",MessageBoxButtons.OK);
+                    
+                    
+                }
+                else
+                {
+                    MessageBox.Show("Pencere kapatıldı, uygulama arka planda çalışmaya devam ediyor.");
+                }
+            }
+        }
+
+        // GirisForm'un, bu formun çalışma durumunu sorabilmesi için
+        public bool CalisiyorMu => calisiyorMu;
+
+        // GirisForm'un, bu formu öne getirebilmesi için
+        public void OneGetir()
+        {
+            this.Show();
+            this.WindowState = FormWindowState.Normal;
+            this.BringToFront();
+            this.Activate();
+        }
+        private void btnRaporAl_Click(object sender, EventArgs e)
+        {
+            if (cmbRaporYil.SelectedItem == null || cmbRaporAy.SelectedIndex < 0)
+            {
+                MessageBox.Show("Lütfen yıl ve ay seçin.");
+                return;
+            }
+
+            int secilenYil = (int)cmbRaporYil.SelectedItem;
+            int secilenAy = cmbRaporAy.SelectedIndex + 1;
+
+            RaporYardimcisi.RaporOlustur(kullaniciId, adSoyad, secilenYil, secilenAy);
+        }
+
+
+
+        private void AnaFormuOnePetir()
+        {
+            this.Show();
+            this.WindowState = FormWindowState.Normal;
+            this.BringToFront();
+            this.Activate();
+        }
+
+    
+
+      
+
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Data.SqlClient;
+using System.Text.RegularExpressions;
 
 namespace WinFormsApp1
 {
@@ -112,9 +113,15 @@ namespace WinFormsApp1
                 string.IsNullOrWhiteSpace(txtAdSoyad.Text) ||
                 string.IsNullOrWhiteSpace(txtSifre.Text) ||
                 string.IsNullOrWhiteSpace(txtSifreTekrar.Text) ||
-                string.IsNullOrWhiteSpace(txtSaatlikUcret.Text))
+                string.IsNullOrWhiteSpace(txtSaatlikUcret.Text) ||
+                string.IsNullOrWhiteSpace(txtEmail.Text))
             {
                 MessageBox.Show("Lütfen tüm alanları doldurun.");
+                return;
+            }
+            if (!Regex.IsMatch(txtEmail.Text, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+            {
+                MessageBox.Show("Lütfen geçerli bir e-posta adresi girin.");
                 return;
             }
 
@@ -131,8 +138,8 @@ namespace WinFormsApp1
                 return;
             }
 
-            // 3) Şifreyi hash'le
-            string sifreHash = SifreYardimcisi.Hashle(txtSifre.Text);
+            // 3) Şifreyi hash'le — salt olarak kullanıcı adını kullanıyoruz
+            string sifreHash = SifreYardimcisi.Hashle(txtSifre.Text, txtKullaniciAdi.Text);
 
             try
             {
@@ -153,8 +160,8 @@ namespace WinFormsApp1
                         }
                     }
 
-                    string ekleSorgu = @"INSERT INTO Kullanicilar (KullaniciAdi, SifreHash, AdSoyad, Rol, KayitTarihi, SaatlikUcret)
-                      VALUES (@KullaniciAdi, @SifreHash, @AdSoyad, @Rol, @KayitTarihi, @SaatlikUcret)";
+                    string ekleSorgu = @"INSERT INTO Kullanicilar (KullaniciAdi, SifreHash, AdSoyad, Rol, KayitTarihi, SaatlikUcret, Email)
+                      VALUES (@KullaniciAdi, @SifreHash, @AdSoyad, @Rol, @KayitTarihi, @SaatlikUcret, @Email)";
 
                     using (SqlCommand ekleKomutu = new SqlCommand(ekleSorgu, baglanti))
                     {
@@ -164,6 +171,7 @@ namespace WinFormsApp1
                         ekleKomutu.Parameters.AddWithValue("@Rol", "Calisan"); // varsayılan rol
                         ekleKomutu.Parameters.AddWithValue("@KayitTarihi", DateTime.Now);
                         ekleKomutu.Parameters.AddWithValue("@SaatlikUcret", saatlikUcret);
+                        ekleKomutu.Parameters.AddWithValue("@Email", txtEmail.Text);
 
                         ekleKomutu.ExecuteNonQuery();
                     }
@@ -176,6 +184,7 @@ namespace WinFormsApp1
                 txtSifre.Clear();
                 txtSifreTekrar.Clear();
                 txtSaatlikUcret.Clear();
+                txtEmail.Clear();
             }
             catch (Exception hata)
             {

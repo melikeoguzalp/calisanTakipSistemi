@@ -6,10 +6,25 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>calisma_takip_uygulama_ikonu.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="OzelMessageBox.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="calisma_takip_uygulama_ikonu.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="OzelMessageBox.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MailKit" Version="4.17.0" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.2" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4129.50" />
   </ItemGroup>
 
   <ItemGroup>

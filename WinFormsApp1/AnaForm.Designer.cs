@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AnaForm));
             lblHosgeldin = new Label();
             label2 = new Label();
             txtKonu = new TextBox();
@@ -39,25 +40,33 @@
             lblBaslangicSaati = new Label();
             label6 = new Label();
             lblGecenSure = new Label();
-            label7 = new Label();
-            lblToplamSure = new Label();
             sureTimer = new System.Windows.Forms.Timer(components);
             btnManuelSure = new Button();
+            pnlFooter = new Panel();
+            lblToplamSure = new Label();
+            lblSaatIkon = new Label();
+            lblToplamSureBaslik = new Label();
+            btnRaporAl = new Button();
+            idleTimer = new System.Windows.Forms.Timer(components);
+            cmbRaporYil = new ComboBox();
+            cmbRaporAy = new ComboBox();
+            pnlFooter.SuspendLayout();
             SuspendLayout();
             // 
             // lblHosgeldin
             // 
             lblHosgeldin.AutoSize = true;
-            lblHosgeldin.Location = new Point(173, 5);
+            lblHosgeldin.Font = new Font("Segoe UI", 7.8F, FontStyle.Regular, GraphicsUnit.Point, 162);
+            lblHosgeldin.Location = new Point(105, 9);
             lblHosgeldin.Name = "lblHosgeldin";
-            lblHosgeldin.Size = new Size(125, 20);
+            lblHosgeldin.Size = new Size(109, 17);
             lblHosgeldin.TabIndex = 0;
             lblHosgeldin.Text = "Hoş geldin, [isim]";
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(134, 36);
+            label2.Location = new Point(133, 38);
             label2.Name = "label2";
             label2.Size = new Size(116, 20);
             label2.TabIndex = 1;
@@ -65,16 +74,15 @@
             // 
             // txtKonu
             // 
-            txtKonu.Location = new Point(136, 66);
+            txtKonu.Location = new Point(77, 61);
             txtKonu.Name = "txtKonu";
             txtKonu.Size = new Size(231, 27);
             txtKonu.TabIndex = 2;
-         
             // 
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(136, 117);
+            label3.Location = new Point(161, 91);
             label3.Name = "label3";
             label3.Size = new Size(47, 20);
             label3.TabIndex = 3;
@@ -82,18 +90,18 @@
             // 
             // txtIcerik
             // 
-            txtIcerik.Location = new Point(136, 140);
+            txtIcerik.Location = new Point(77, 117);
             txtIcerik.Multiline = true;
             txtIcerik.Name = "txtIcerik";
-            txtIcerik.Size = new Size(231, 100);
+            txtIcerik.Size = new Size(236, 87);
             txtIcerik.TabIndex = 4;
             // 
             // btnBaslatDurdur
             // 
             btnBaslatDurdur.AutoSize = true;
-            btnBaslatDurdur.Location = new Point(134, 273);
+            btnBaslatDurdur.Location = new Point(77, 210);
             btnBaslatDurdur.Name = "btnBaslatDurdur";
-            btnBaslatDurdur.Size = new Size(236, 51);
+            btnBaslatDurdur.Size = new Size(236, 30);
             btnBaslatDurdur.TabIndex = 7;
             btnBaslatDurdur.Text = "Başlat";
             btnBaslatDurdur.UseVisualStyleBackColor = true;
@@ -102,7 +110,7 @@
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(137, 338);
+            label5.Location = new Point(78, 244);
             label5.Name = "label5";
             label5.Size = new Size(112, 20);
             label5.TabIndex = 8;
@@ -111,7 +119,7 @@
             // lblBaslangicSaati
             // 
             lblBaslangicSaati.AutoSize = true;
-            lblBaslangicSaati.Location = new Point(139, 369);
+            lblBaslangicSaati.Location = new Point(80, 275);
             lblBaslangicSaati.Name = "lblBaslangicSaati";
             lblBaslangicSaati.Size = new Size(27, 20);
             lblBaslangicSaati.TabIndex = 9;
@@ -120,7 +128,7 @@
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new Point(267, 338);
+            label6.Location = new Point(208, 244);
             label6.Name = "label6";
             label6.Size = new Size(86, 20);
             label6.TabIndex = 10;
@@ -129,29 +137,11 @@
             // lblGecenSure
             // 
             lblGecenSure.AutoSize = true;
-            lblGecenSure.Location = new Point(274, 369);
+            lblGecenSure.Location = new Point(215, 275);
             lblGecenSure.Name = "lblGecenSure";
             lblGecenSure.Size = new Size(27, 20);
             lblGecenSure.TabIndex = 11;
             lblGecenSure.Text = "---";
-            // 
-            // label7
-            // 
-            label7.AutoSize = true;
-            label7.Location = new Point(176, 419);
-            label7.Name = "label7";
-            label7.Size = new Size(154, 20);
-            label7.TabIndex = 12;
-            label7.Text = "Toplam Çalışılan Süre:";
-            // 
-            // lblToplamSure
-            // 
-            lblToplamSure.AllowDrop = true;
-            lblToplamSure.Location = new Point(181, 453);
-            lblToplamSure.Name = "lblToplamSure";
-            lblToplamSure.Size = new Size(186, 35);
-            lblToplamSure.TabIndex = 13;
-            lblToplamSure.Text = "---";
             // 
             // sureTimer
             // 
@@ -160,22 +150,103 @@
             // 
             // btnManuelSure
             // 
-            btnManuelSure.Location = new Point(159, 503);
+            btnManuelSure.Location = new Point(77, 329);
             btnManuelSure.Name = "btnManuelSure";
-            btnManuelSure.Size = new Size(194, 53);
+            btnManuelSure.Size = new Size(112, 32);
             btnManuelSure.TabIndex = 14;
-            btnManuelSure.Text = "Manuel Çalışma Saati Gir";
+            btnManuelSure.Text = "Manuel Kayıt";
             btnManuelSure.UseVisualStyleBackColor = true;
             btnManuelSure.Click += btnManuelSure_Click;
+            // 
+            // pnlFooter
+            // 
+            pnlFooter.BackColor = Color.DarkCyan;
+            pnlFooter.Controls.Add(lblToplamSure);
+            pnlFooter.Controls.Add(lblSaatIkon);
+            pnlFooter.Controls.Add(lblToplamSureBaslik);
+            pnlFooter.Dock = DockStyle.Bottom;
+            pnlFooter.Location = new Point(0, 367);
+            pnlFooter.Name = "pnlFooter";
+            pnlFooter.Size = new Size(392, 39);
+            pnlFooter.TabIndex = 15;
+            // 
+            // lblToplamSure
+            // 
+            lblToplamSure.AllowDrop = true;
+            lblToplamSure.Font = new Font("Segoe UI", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 162);
+            lblToplamSure.ForeColor = Color.White;
+            lblToplamSure.Location = new Point(120, 17);
+            lblToplamSure.Name = "lblToplamSure";
+            lblToplamSure.Size = new Size(259, 28);
+            lblToplamSure.TabIndex = 14;
+            lblToplamSure.Text = "---";
+            // 
+            // lblSaatIkon
+            // 
+            lblSaatIkon.AutoSize = true;
+            lblSaatIkon.Font = new Font("Segoe UI", 13.8F, FontStyle.Regular, GraphicsUnit.Point, 162);
+            lblSaatIkon.ForeColor = Color.White;
+            lblSaatIkon.Location = new Point(3, 4);
+            lblSaatIkon.Name = "lblSaatIkon";
+            lblSaatIkon.Size = new Size(46, 31);
+            lblSaatIkon.TabIndex = 15;
+            lblSaatIkon.Text = "🕛";
+            // 
+            // lblToplamSureBaslik
+            // 
+            lblToplamSureBaslik.AutoSize = true;
+            lblToplamSureBaslik.Font = new Font("Segoe UI", 7.8F, FontStyle.Bold, GraphicsUnit.Point, 162);
+            lblToplamSureBaslik.ForeColor = Color.Silver;
+            lblToplamSureBaslik.Location = new Point(120, 0);
+            lblToplamSureBaslik.Name = "lblToplamSureBaslik";
+            lblToplamSureBaslik.Size = new Size(138, 17);
+            lblToplamSureBaslik.TabIndex = 16;
+            lblToplamSureBaslik.Text = "Toplam çalışılan süre";
+            // 
+            // btnRaporAl
+            // 
+            btnRaporAl.Location = new Point(200, 329);
+            btnRaporAl.Name = "btnRaporAl";
+            btnRaporAl.Size = new Size(113, 32);
+            btnRaporAl.TabIndex = 16;
+            btnRaporAl.Text = "Rapor Al";
+            btnRaporAl.UseVisualStyleBackColor = true;
+            btnRaporAl.Click += btnRaporAl_Click;
+            // 
+            // idleTimer
+            // 
+            idleTimer.Interval = 1000;
+            idleTimer.Tick += idleTimer_Tick;
+            // 
+            // cmbRaporYil
+            // 
+            cmbRaporYil.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbRaporYil.FormattingEnabled = true;
+            cmbRaporYil.Location = new Point(80, 295);
+            cmbRaporYil.Name = "cmbRaporYil";
+            cmbRaporYil.Size = new Size(109, 28);
+            cmbRaporYil.TabIndex = 17;
+            cmbRaporYil.SelectedIndexChanged += cmbRaporYil_SelectedIndexChanged;
+            // 
+            // cmbRaporAy
+            // 
+            cmbRaporAy.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbRaporAy.FormattingEnabled = true;
+            cmbRaporAy.Location = new Point(200, 295);
+            cmbRaporAy.Name = "cmbRaporAy";
+            cmbRaporAy.Size = new Size(113, 28);
+            cmbRaporAy.TabIndex = 18;
             // 
             // AnaForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(622, 599);
+            ClientSize = new Size(392, 406);
+            Controls.Add(cmbRaporAy);
+            Controls.Add(cmbRaporYil);
+            Controls.Add(btnRaporAl);
+            Controls.Add(pnlFooter);
             Controls.Add(btnManuelSure);
-            Controls.Add(lblToplamSure);
-            Controls.Add(label7);
             Controls.Add(lblGecenSure);
             Controls.Add(label6);
             Controls.Add(lblBaslangicSaati);
@@ -186,8 +257,13 @@
             Controls.Add(txtKonu);
             Controls.Add(label2);
             Controls.Add(lblHosgeldin);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "AnaForm";
             Text = "Çalışma Takibi";
+            FormClosing += AnaForm_FormClosing;
+            KeyDown += AnaForm_KeyDown;
+            pnlFooter.ResumeLayout(false);
+            pnlFooter.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -204,9 +280,16 @@
         private Label lblBaslangicSaati;
         private Label label6;
         private Label lblGecenSure;
-        private Label label7;
-        private Label lblToplamSure;
         private System.Windows.Forms.Timer sureTimer;
         private Button btnManuelSure;
+        private Panel pnlFooter;
+        private Label lblToplamSure;
+        private Label lblSaatIkon;
+        private Label lblToplamSureBaslik;
+        private Button btnRaporAl;
+        private NotifyIcon notifyIconAna;
+        private System.Windows.Forms.Timer idleTimer;
+        private ComboBox cmbRaporYil;
+        private ComboBox cmbRaporAy;
     }
 }

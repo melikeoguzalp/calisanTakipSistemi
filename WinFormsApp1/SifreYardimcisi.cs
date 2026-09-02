@@ -7,11 +7,14 @@ namespace WinFormsApp1
     internal class SifreYardimcisi
     {
         // Şifreyi hash'e çevirir (geri döndürülemez, tek yönlü)
-        public static string Hashle(string sifre)
+        // 'salt' olarak kullanıcı adını gönderiyoruz — böylece aynı şifreyi seçen
+        // iki farklı kullanıcı, farklı kullanıcı adlarına sahip oldukları için farklı hash üretir.
+        public static string Hashle(string sifre, string salt)
         {
             using (SHA256 sha256 = SHA256.Create())
             {
-                byte[] veri = Encoding.UTF8.GetBytes(sifre);
+                string yeni = sifre + salt;
+                byte[] veri = Encoding.UTF8.GetBytes(yeni);
                 byte[] hashVeri = sha256.ComputeHash(veri);
 
                 StringBuilder sonuc = new StringBuilder();
@@ -24,9 +27,9 @@ namespace WinFormsApp1
         }
 
         // Girilen şifre ile veritabanındaki hash'i karşılaştırır
-        public static bool Dogrula(string girilenSifre, string kayitliHash)
+        public static bool Dogrula(string girilenSifre, string kayitliHash, string kullaniciAdi)
         {
-            string girilenHash = Hashle(girilenSifre);
+            string girilenHash = Hashle(girilenSifre, kullaniciAdi);
             return girilenHash == kayitliHash;
         }
     }
